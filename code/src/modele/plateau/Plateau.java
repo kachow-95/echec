@@ -54,34 +54,103 @@ public class Plateau extends Observable {
         Tour tour = new Tour(this);
         Case cR = grilleCases[0][7];
         tour.allerSurCase(cR);
+        Tour tour1 = new Tour(this);
         Case cR2 = grilleCases[7][7];
-        tour.allerSurCase(cR2);
+        tour1.allerSurCase(cR2);
 
         Fou fou = new Fou(this);
         Case cB = grilleCases[2][7];
         fou.allerSurCase(cB);
+        Fou fou1 = new Fou(this);
         Case cB2 = grilleCases[5][7];
-        fou.allerSurCase(cB2);
+        fou1.allerSurCase(cB2);
 
         Cheval cheval = new Cheval(this);
         Case cN = grilleCases[1][7];
         cheval.allerSurCase(cN);
+        Cheval cheval1 = new Cheval(this);
         Case cN2 = grilleCases[6][7];
-        cheval.allerSurCase(cN2);
+        cheval1.allerSurCase(cN2);
 
         Pion pion = new Pion(this);
         Case cP = grilleCases[0][6];
-        cheval.allerSurCase(cP);
+        pion.allerSurCase(cP);
+        Pion pion1 = new Pion(this);
         Case cP1 = grilleCases[1][6];
-        cheval.allerSurCase(cP1);
+        pion1.allerSurCase(cP1);
+        Pion pion2 = new Pion(this);
         Case cP2 = grilleCases[2][6];
-        cheval.allerSurCase(cP2);
+        pion2.allerSurCase(cP2);
+        Pion pion3 = new Pion(this);
         Case cP3 = grilleCases[3][6];
-        cheval.allerSurCase(cP3);
+        pion3.allerSurCase(cP3);
+        Pion pion4 = new Pion(this);
         Case cP4 = grilleCases[4][6];
-        cheval.allerSurCase(cP4);
+        pion4.allerSurCase(cP4);
+        Pion pion5 = new Pion(this);
         Case cP5 = grilleCases[5][6];
-        cheval.allerSurCase(cP5);
+        pion5.allerSurCase(cP5);
+        Pion pion6 = new Pion(this);
+        Case cP6 = grilleCases[6][6];
+        pion6.allerSurCase(cP6);
+        Pion pion7 = new Pion(this);
+        Case cP7 = grilleCases[7][6];
+        pion7.allerSurCase(cP7);
+
+        Roi roiN = new Roi(this);
+        Case cKN = grilleCases[4][0];
+        roiN.allerSurCase(cKN);
+
+        Reine reineN = new Reine(this);
+        Case cQN = grilleCases[3][0];
+        reineN.allerSurCase(cQN);
+
+        Tour tourN = new Tour(this);
+        Case cRN = grilleCases[0][0];
+        tourN.allerSurCase(cRN);
+        Tour tourN1 = new Tour(this);
+        Case cR2N = grilleCases[7][0];
+        tourN1.allerSurCase(cR2N);
+
+        Fou fouN = new Fou(this);
+        Case cBN = grilleCases[2][0];
+        fouN.allerSurCase(cBN);
+        Fou fouN1 = new Fou(this);
+        Case cB2N = grilleCases[5][0];
+        fouN1.allerSurCase(cB2N);
+
+        Cheval chevalN = new Cheval(this);
+        Case cNN = grilleCases[1][0];
+        chevalN.allerSurCase(cNN);
+        Cheval chevalN1 = new Cheval(this);
+        Case cN2N = grilleCases[6][0];
+        chevalN1.allerSurCase(cN2N);
+
+        Pion pionN = new Pion(this);
+        Case cPN = grilleCases[0][1];
+        pionN.allerSurCase(cPN);
+        Pion pionN1 = new Pion(this);
+        Case cP1N = grilleCases[1][1];
+        pionN1.allerSurCase(cP1N);
+        Pion pionN2 = new Pion(this);
+        Case cPN2 = grilleCases[2][1];
+        pionN2.allerSurCase(cPN2);
+        Pion pionN3 = new Pion(this);
+        Case cPN3 = grilleCases[3][1];
+        pionN3.allerSurCase(cPN3);
+        Pion pionN4 = new Pion(this);
+        Case cPN4 = grilleCases[4][1];
+        pionN4.allerSurCase(cPN4);
+        Pion pionN5 = new Pion(this);
+        Case cPN5 = grilleCases[5][1];
+        pionN5.allerSurCase(cPN5);
+        Pion pionN6 = new Pion(this);
+        Case cPN6 = grilleCases[6][1];
+        pionN6.allerSurCase(cPN6);
+        Pion pionN7 = new Pion(this);
+        Case cPN7 = grilleCases[7][1];
+        pionN7.allerSurCase(cPN7);
+
 
 
 

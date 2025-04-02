@@ -8,11 +8,12 @@ import modele.plateau.Plateau;
 /**
  * Entités amenées à bouger
  */
-public abstract class Piece {
+public abstract class Piece<coul> {
 
     protected Case c;
     protected Plateau plateau;
     protected DecorateurCasesAccessibles casesAccessibles;
+    protected boolean couleur;
 
     public Piece(Plateau _plateau) {
         plateau = _plateau;
@@ -32,6 +33,14 @@ public abstract class Piece {
 
     public Case getCase() {
         return c;
+    }
+
+    public void setColor(boolean coul){
+        this.couleur=coul;
+    }
+
+    public boolean getColor(){
+        return this.couleur;
     }
 
 

@@ -29,10 +29,15 @@ public class VueControleur extends JFrame implements Observer {
     private ImageIcon icoRoi;
     private ImageIcon icoReine;
     private ImageIcon icoTour;
-    private ImageIcon icoFil;
+    private ImageIcon icoFou;
     private ImageIcon icoCheval;
     private ImageIcon icoPion;
-
+    private ImageIcon icoRoiN;
+    private ImageIcon icoReineN;
+    private ImageIcon icoTourN;
+    private ImageIcon icoFouN;
+    private ImageIcon icoChevalN;
+    private ImageIcon icoPionN;
     private Case caseClic1; // mémorisation des cases cliquées
     private Case caseClic2;
 
@@ -61,10 +66,16 @@ public class VueControleur extends JFrame implements Observer {
     private void chargerLesIcones() {
         icoRoi = chargerIcone("Images/wK.png");
         icoReine = chargerIcone ("Images/wQ.png");
-        icoTour = chargerIcone ("Images/wT.png");
-        icoFil = chargerIcone ("Images/wB.png");
+        icoTour = chargerIcone ("Images/wR.png");
+        icoFou = chargerIcone ("Images/wB.png");
         icoCheval = chargerIcone("Images/wN.png");
         icoPion = chargerIcone("Images/wP.png");
+        icoRoiN = chargerIcone("Images/bK.png");
+        icoReineN = chargerIcone ("Images/bQ.png");
+        icoTourN = chargerIcone ("Images/bR.png");
+        icoFouN = chargerIcone ("Images/bB.png");
+        icoChevalN = chargerIcone("Images/bN.png");
+        icoPionN = chargerIcone("Images/bP.png");
     }
 
     private ImageIcon chargerIcone(String urlIcone) {
@@ -153,16 +164,27 @@ public class VueControleur extends JFrame implements Observer {
                         } else if (e instanceof Tour) {
                             tabJLabel[x][y].setIcon(icoTour);
                         } else if (e instanceof Fou) {
-                            tabJLabel[x][y].setIcon(icoFil);
+                            tabJLabel[x][y].setIcon(icoFou);
                         } else if (e instanceof Cheval) {
                             tabJLabel[x][y].setIcon(icoCheval);
                         } else if (e instanceof Pion) {
                             tabJLabel[x][y].setIcon(icoPion);
+                        } else if (e instanceof Roi) {
+                            tabJLabel[x][y].setIcon(icoRoiN);
+                        } else if (e instanceof Reine) {
+                            tabJLabel[x][y].setIcon(icoReineN);
+                        } else if (e instanceof Tour) {
+                            tabJLabel[x][y].setIcon(icoTourN);
+                        } else if (e instanceof Fou) {
+                            tabJLabel[x][y].setIcon(icoFouN);
+                        } else if (e instanceof Cheval) {
+                            tabJLabel[x][y].setIcon(icoChevalN);
+                        } else if (e instanceof Pion) {
+                            tabJLabel[x][y].setIcon(icoPionN);
+                        } else {
+                            tabJLabel[x][y].setIcon(null);
                         }
-                    } else {
-                        tabJLabel[x][y].setIcon(null);
                     }
-
 
                 }
 
