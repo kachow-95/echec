@@ -6,8 +6,7 @@
 package modele.plateau;
 
 
-import modele.jeu.Piece;
-import modele.jeu.Roi;
+import modele.jeu.*;
 
 import java.awt.Point;
 import java.util.HashMap;
@@ -45,8 +44,52 @@ public class Plateau extends Observable {
 
     public void placerPieces() {
         Roi roi = new Roi(this);
-        Case cR = grilleCases[4][7];
-        roi.allerSurCase(cR);
+        Case cK = grilleCases[4][7];
+        roi.allerSurCase(cK);
+
+        Reine reine = new Reine(this);
+        Case cQ = grilleCases[3][7];
+        reine.allerSurCase(cQ);
+
+        Tour tour = new Tour(this);
+        Case cR = grilleCases[0][7];
+        tour.allerSurCase(cR);
+        Case cR2 = grilleCases[7][7];
+        tour.allerSurCase(cR2);
+
+        Fou fou = new Fou(this);
+        Case cB = grilleCases[2][7];
+        fou.allerSurCase(cB);
+        Case cB2 = grilleCases[5][7];
+        fou.allerSurCase(cB2);
+
+        Cheval cheval = new Cheval(this);
+        Case cN = grilleCases[1][7];
+        cheval.allerSurCase(cN);
+        Case cN2 = grilleCases[6][7];
+        cheval.allerSurCase(cN2);
+
+        Pion pion = new Pion(this);
+        Case cP = grilleCases[0][6];
+        cheval.allerSurCase(cP);
+        Case cP1 = grilleCases[1][6];
+        cheval.allerSurCase(cP1);
+        Case cP2 = grilleCases[2][6];
+        cheval.allerSurCase(cP2);
+        Case cP3 = grilleCases[3][6];
+        cheval.allerSurCase(cP3);
+        Case cP4 = grilleCases[4][6];
+        cheval.allerSurCase(cP4);
+        Case cP5 = grilleCases[5][6];
+        cheval.allerSurCase(cP5);
+
+
+
+
+
+
+
+
 
         setChanged();
         notifyObservers();

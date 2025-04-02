@@ -32,7 +32,10 @@ public class VueControleur extends JFrame implements Observer {
     private ImageIcon icoRoi;
     private ImageIcon icoReine;
     private ImageIcon icoTour;
-    
+    private ImageIcon icoFil;
+    private ImageIcon icoCheval;
+    private ImageIcon icoPion;
+
     private Case caseClic1; // mémorisation des cases cliquées
     private Case caseClic2;
 
@@ -60,10 +63,11 @@ public class VueControleur extends JFrame implements Observer {
 
     private void chargerLesIcones() {
         icoRoi = chargerIcone("Images/wK.png");
-        icoReine = chargerIcone ("Images/wR.png");
-        icoTour = charge
-
-
+        icoReine = chargerIcone ("Images/wQ.png");
+        icoTour = chargerIcone ("Images/wT.png");
+        icoFil = chargerIcone ("Images/wB.png");
+        icoCheval = chargerIcone("Images/wN.png");
+        icoPion = chargerIcone("Images/wP.png");
     }
 
     private ImageIcon chargerIcone(String urlIcone) {
