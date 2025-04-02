@@ -157,17 +157,17 @@ public class VueControleur extends JFrame implements Observer {
                     Piece e = c.getPiece();
 
                     if (e != null) {
-                        if (e instanceof Roi) {
+                        if (e instanceof Roi && e.getColor()==true) {
                             tabJLabel[x][y].setIcon(icoRoi);
-                        } else if (e instanceof Reine) {
+                        } else if (e instanceof Reine && e.getColor()==true) {
                             tabJLabel[x][y].setIcon(icoReine);
-                        } else if (e instanceof Tour) {
+                        } else if (e instanceof Tour && e.getColor()==true) {
                             tabJLabel[x][y].setIcon(icoTour);
-                        } else if (e instanceof Fou) {
+                        } else if (e instanceof Fou && e.getColor()==true) {
                             tabJLabel[x][y].setIcon(icoFou);
-                        } else if (e instanceof Cheval) {
+                        } else if (e instanceof Cheval && e.getColor()==true) {
                             tabJLabel[x][y].setIcon(icoCheval);
-                        } else if (e instanceof Pion) {
+                        } else if (e instanceof Pion && e.getColor()==true) {
                             tabJLabel[x][y].setIcon(icoPion);
                         } else if (e instanceof Roi) {
                             tabJLabel[x][y].setIcon(icoRoiN);
@@ -181,9 +181,9 @@ public class VueControleur extends JFrame implements Observer {
                             tabJLabel[x][y].setIcon(icoChevalN);
                         } else if (e instanceof Pion) {
                             tabJLabel[x][y].setIcon(icoPionN);
-                        } else {
-                            tabJLabel[x][y].setIcon(null);
                         }
+                    } else {
+                        tabJLabel[x][y].setIcon(null);
                     }
 
                 }

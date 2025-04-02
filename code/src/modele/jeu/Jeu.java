@@ -56,7 +56,9 @@ public class Jeu extends Thread{
 
         while(true) {
             Coup c = j1.getCoup();
-            appliquerCoup(c);
+            appliquerCoup(c); //a changer avec est ce que la case est accessible?
+
+
         }
 
     }

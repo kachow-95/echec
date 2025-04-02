@@ -8,12 +8,12 @@ import modele.plateau.Plateau;
 /**
  * Entités amenées à bouger
  */
-public abstract class Piece<coul> {
+public abstract class Piece {
 
     protected Case c;
     protected Plateau plateau;
     protected DecorateurCasesAccessibles casesAccessibles;
-    protected boolean couleur;
+    protected boolean couleur;// true = blanc, false = noir
 
     public Piece(Plateau _plateau) {
         plateau = _plateau;
