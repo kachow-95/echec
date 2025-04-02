@@ -9,11 +9,8 @@ import java.util.Observer;
 import javax.swing.*;
 
 
-import modele.jeu.Coup;
-import modele.jeu.Jeu;
+import modele.jeu.*;
 import modele.plateau.Case;
-import modele.jeu.Piece;
-import modele.jeu.Roi;
 import modele.plateau.Plateau;
 
 
@@ -148,15 +145,22 @@ public class VueControleur extends JFrame implements Observer {
 
                     Piece e = c.getPiece();
 
-                    if (e!= null) {
-                        if (c.getPiece() instanceof Roi) {
-
+                    if (e != null) {
+                        if (e instanceof Roi) {
                             tabJLabel[x][y].setIcon(icoRoi);
-
+                        } else if (e instanceof Reine) {
+                            tabJLabel[x][y].setIcon(icoReine);
+                        } else if (e instanceof Tour) {
+                            tabJLabel[x][y].setIcon(icoTour);
+                        } else if (e instanceof Fou) {
+                            tabJLabel[x][y].setIcon(icoFil);
+                        } else if (e instanceof Cheval) {
+                            tabJLabel[x][y].setIcon(icoCheval);
+                        } else if (e instanceof Pion) {
+                            tabJLabel[x][y].setIcon(icoPion);
                         }
                     } else {
                         tabJLabel[x][y].setIcon(null);
-
                     }
 
 
