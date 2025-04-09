@@ -4,13 +4,21 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 import javax.swing.*;
 
-
-import modele.jeu.*;
+import modele.jeu.Cavalier;
+import modele.jeu.Coup;
+import modele.jeu.Dame;
+import modele.jeu.Fou;
+import modele.jeu.Jeu;
 import modele.plateau.Case;
+import modele.jeu.Piece;
+import modele.jeu.Pion;
+import modele.jeu.Roi;
+import modele.jeu.Tour;
 import modele.plateau.Plateau;
 
 
@@ -26,18 +34,19 @@ public class VueControleur extends JFrame implements Observer {
     private final int sizeY;
     private static final int pxCase = 50; // nombre de pixel par case
     // icones affichées dans la grille
-    private ImageIcon icoRoi;
-    private ImageIcon icoReine;
-    private ImageIcon icoTour;
-    private ImageIcon icoFou;
-    private ImageIcon icoCheval;
-    private ImageIcon icoPion;
-    private ImageIcon icoRoiN;
-    private ImageIcon icoReineN;
-    private ImageIcon icoTourN;
-    private ImageIcon icoFouN;
-    private ImageIcon icoChevalN;
-    private ImageIcon icoPionN;
+    private ImageIcon icoRoiNoir;
+    private ImageIcon icoRoiBlanc;
+    private ImageIcon icoDameBlanc;
+    private ImageIcon icoDameNoir;
+    private ImageIcon icoFouBlanc;
+    private ImageIcon icoFouNoir;
+    private ImageIcon icoCavalierBlanc;
+    private ImageIcon icoCavalierNoir;
+    private ImageIcon icoTourBlanc;
+    private ImageIcon icoTourNoir;
+    private ImageIcon icoPionBlanc;
+    private ImageIcon icoPionNoir;
+
     private Case caseClic1; // mémorisation des cases cliquées
     private Case caseClic2;
 
@@ -64,20 +73,21 @@ public class VueControleur extends JFrame implements Observer {
 
 
     private void chargerLesIcones() {
-        icoRoi = chargerIcone("Images/wK.png");
-        icoReine = chargerIcone ("Images/wQ.png");
-        icoTour = chargerIcone ("Images/wR.png");
-        icoFou = chargerIcone ("Images/wB.png");
-        icoCheval = chargerIcone("Images/wN.png");
-        icoPion = chargerIcone("Images/wP.png");
-        icoRoiN = chargerIcone("Images/bK.png");
-        icoReineN = chargerIcone ("Images/bQ.png");
-        icoTourN = chargerIcone ("Images/bR.png");
-        icoFouN = chargerIcone ("Images/bB.png");
-        icoChevalN = chargerIcone("Images/bN.png");
-        icoPionN = chargerIcone("Images/bP.png");
-    }
+        icoRoiBlanc = chargerIcone("Images/wK.png");
+        icoDameBlanc = chargerIcone("Images/wQ.png");
+        icoFouBlanc = chargerIcone("Images/wB.png");
+        icoCavalierBlanc = chargerIcone("Images/wN.png");
+        icoTourBlanc = chargerIcone("Images/wR.png");
+        icoPionBlanc = chargerIcone("Images/wP.png");
 
+        icoRoiNoir = chargerIcone("Images/bK.png");
+        icoDameNoir = chargerIcone("Images/bQ.png");
+        icoFouNoir = chargerIcone("Images/bB.png");
+        icoCavalierNoir = chargerIcone("Images/bN.png");
+        icoTourNoir = chargerIcone("Images/bR.png");
+        icoPionNoir = chargerIcone("Images/bP.png");
+
+    }
     private ImageIcon chargerIcone(String urlIcone) {
         BufferedImage image = null;
 
@@ -89,6 +99,51 @@ public class VueControleur extends JFrame implements Observer {
 
         return resizedIcon;
     }
+
+
+
+    // Ajoutez ces méthodes à VueControleur.java
+    private ArrayList<Case> casesMarquees = new ArrayList<>();
+    private Color couleurOriginaleCasePaire = new Color(150, 150, 210);
+    private Color couleurOriginaleCaseImpaire = new Color(50, 50, 110);
+    private Color couleurCaseAccessible = new Color(255, 255, 0, 100); // Jaune semi-transparent
+
+    private void marquerCasesAccessibles(ArrayList<Case> cases) {
+        // Sauvegarder les cases marquées pour pouvoir les effacer plus tard
+        casesMarquees.clear();
+        casesMarquees.addAll(cases);
+
+        // Marquer chaque case accessible
+        for (Case c : cases) {
+            Point pos = plateau.getPositionCase(c);
+            if (pos != null) {
+                int x = pos.x;
+                int y = pos.y;
+
+                // Changer la couleur de fond de la case
+                tabJLabel[x][y].setBackground(couleurCaseAccessible);
+            }
+        }
+    }
+
+    private void effacerMarquageCasesAccessibles() {
+        for (Case c : casesMarquees) {
+            Point pos = plateau.getPositionCase(c);
+            if (pos != null) {
+                int x = pos.x;
+                int y = pos.y;
+
+                // Restaurer la couleur d'origine
+                if ((y%2 == 0 && x%2 == 0) || (y%2 != 0 && x%2 != 0)) {
+                    tabJLabel[x][y].setBackground(couleurOriginaleCaseImpaire);
+                } else {
+                    tabJLabel[x][y].setBackground(couleurOriginaleCasePaire);
+                }
+            }
+        }
+        casesMarquees.clear();
+    }
+
 
     private void placerLesComposantsGraphiques() {
         setTitle("Jeu d'Échecs");
@@ -110,19 +165,46 @@ public class VueControleur extends JFrame implements Observer {
                 final int xx = x; // permet de compiler la classe anonyme ci-dessous
                 final int yy = y;
                 // écouteur de clics
+                // Modifiez la méthode mouseClicked dans VueControleur.java
                 jlab.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
-
                         if (caseClic1 == null) {
                             caseClic1 = plateau.getCases()[xx][yy];
+
+                            // Vérifie s'il y a une pièce sur la case et si c'est au tour du joueur
+                            if (caseClic1.getPiece() != null) {
+                                // On obtient les cases accessibles
+                                ArrayList<Case> casesAccessibles = caseClic1.getPiece().getCasesAccessibles();
+
+                                // Si aucune case accessible, annuler la sélection
+                                if (casesAccessibles.isEmpty()) {
+                                    caseClic1 = null;
+                                } else {
+                                    // Marquer ces cases pour l'affichage
+                                    marquerCasesAccessibles(casesAccessibles);
+                                }
+                            } else {
+                                // Pas de pièce sur la case, on réinitialise
+                                caseClic1 = null;
+                            }
                         } else {
                             caseClic2 = plateau.getCases()[xx][yy];
-                            jeu.envoyerCoup(new Coup(caseClic1, caseClic2));
+
+                            // Réinitialiser le marquage des cases accessibles
+                            effacerMarquageCasesAccessibles();
+
+                            // Vérifier si la case d'arrivée fait partie des cases accessibles
+                            ArrayList<Case> casesAccessibles = caseClic1.getPiece().getCasesAccessibles();
+                            if (casesAccessibles.contains(caseClic2)) {
+                                // Envoyer le coup
+                                jeu.envoyerCoup(new Coup(caseClic1, caseClic2));
+                            }
+
+                            // Réinitialiser les clics
                             caseClic1 = null;
                             caseClic2 = null;
                         }
-
                     }
                 });
 
@@ -141,7 +223,7 @@ public class VueControleur extends JFrame implements Observer {
         add(grilleJLabels);
     }
 
-    
+
     /**
      * Il y a une grille du côté du modèle ( jeu.getGrille() ) et une grille du côté de la vue (tabJLabel)
      */
@@ -157,34 +239,23 @@ public class VueControleur extends JFrame implements Observer {
                     Piece e = c.getPiece();
 
                     if (e != null) {
-                        if (e instanceof Roi && e.getColor()==true) {
-                            tabJLabel[x][y].setIcon(icoRoi);
-                        } else if (e instanceof Reine && e.getColor()==true) {
-                            tabJLabel[x][y].setIcon(icoReine);
-                        } else if (e instanceof Tour && e.getColor()==true) {
-                            tabJLabel[x][y].setIcon(icoTour);
-                        } else if (e instanceof Fou && e.getColor()==true) {
-                            tabJLabel[x][y].setIcon(icoFou);
-                        } else if (e instanceof Cheval && e.getColor()==true) {
-                            tabJLabel[x][y].setIcon(icoCheval);
-                        } else if (e instanceof Pion && e.getColor()==true) {
-                            tabJLabel[x][y].setIcon(icoPion);
-                        } else if (e instanceof Roi) {
-                            tabJLabel[x][y].setIcon(icoRoiN);
-                        } else if (e instanceof Reine) {
-                            tabJLabel[x][y].setIcon(icoReineN);
+                        if (e instanceof Roi) {
+                            tabJLabel[x][y].setIcon(e.estBlanc() ? icoRoiBlanc : icoRoiNoir);
+                        } else if (e instanceof Dame) {
+                            tabJLabel[x][y].setIcon(e.estBlanc() ? icoDameBlanc : icoDameNoir);
                         } else if (e instanceof Tour) {
-                            tabJLabel[x][y].setIcon(icoTourN);
+                            tabJLabel[x][y].setIcon(e.estBlanc() ? icoTourBlanc : icoTourNoir);
                         } else if (e instanceof Fou) {
-                            tabJLabel[x][y].setIcon(icoFouN);
-                        } else if (e instanceof Cheval) {
-                            tabJLabel[x][y].setIcon(icoChevalN);
+                            tabJLabel[x][y].setIcon(e.estBlanc() ? icoFouBlanc : icoFouNoir);
+                        } else if (e instanceof Cavalier) {
+                            tabJLabel[x][y].setIcon(e.estBlanc() ? icoCavalierBlanc : icoCavalierNoir);
                         } else if (e instanceof Pion) {
-                            tabJLabel[x][y].setIcon(icoPionN);
+                            tabJLabel[x][y].setIcon(e.estBlanc() ? icoPionBlanc : icoPionNoir);
                         }
                     } else {
                         tabJLabel[x][y].setIcon(null);
                     }
+
 
                 }
 

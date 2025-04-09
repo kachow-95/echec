@@ -6,7 +6,13 @@
 package modele.plateau;
 
 
-import modele.jeu.*;
+import modele.jeu.Cavalier;
+import modele.jeu.Dame;
+import modele.jeu.Fou;
+import modele.jeu.Piece;
+import modele.jeu.Pion;
+import modele.jeu.Roi;
+import modele.jeu.Tour;
 
 import java.awt.Point;
 import java.util.HashMap;
@@ -43,75 +49,71 @@ public class Plateau extends Observable {
     }
 
     public void placerPieces() {
-        placerPiece(new Roi(this), 4, 7, true);
-        placerPiece(new Reine(this), 3, 7, true);
-        placerPiece(new Tour(this), 0, 7, true);
-        placerPiece(new Tour(this), 7, 7, true);
-        placerPiece(new Fou(this), 2, 7, true);
-        placerPiece(new Fou(this), 5, 7, true);
-        placerPiece(new Cheval(this), 1, 7, true);
-        placerPiece(new Cheval(this), 6, 7, true);
-        for (int i = 0; i < SIZE_X; i++) {
-            placerPiece(new Pion(this), i, 6, true);
+        // Pièces blanches (rangée 7)
+        new Tour(this, true).allerSurCase(grilleCases[0][7]);
+        new Cavalier(this, true).allerSurCase(grilleCases[1][7]);
+        new Fou(this, true).allerSurCase(grilleCases[2][7]);
+        new Dame(this, true).allerSurCase(grilleCases[3][7]);
+        new Roi(this, true).allerSurCase(grilleCases[4][7]);
+        new Fou(this, true).allerSurCase(grilleCases[5][7]);
+        new Cavalier(this, true).allerSurCase(grilleCases[6][7]);
+        new Tour(this, true).allerSurCase(grilleCases[7][7]);
+
+        // Pions blancs (rangée 6)
+        for (int x = 0; x < 8; x++) {
+            new Pion(this, true).allerSurCase(grilleCases[x][6]);
         }
 
-        placerPiece(new Roi(this), 4, 0, false);
-        placerPiece(new Reine(this), 3, 0, false);
-        placerPiece(new Tour(this), 0, 0, false);
-        placerPiece(new Tour(this), 7, 0, false);
-        placerPiece(new Fou(this), 2, 0, false);
-        placerPiece(new Fou(this), 5, 0, false);
-        placerPiece(new Cheval(this), 1, 0, false);
-        placerPiece(new Cheval(this), 6, 0, false);
-        for (int i = 0; i < SIZE_X; i++) {
-            placerPiece(new Pion(this), i, 1, false);
-        }
+        // Pièces noires (rangée 0)
+        new Tour(this, false).allerSurCase(grilleCases[0][0]);
+        new Cavalier(this, false).allerSurCase(grilleCases[1][0]);
+        new Fou(this, false).allerSurCase(grilleCases[2][0]);
+        new Dame(this, false).allerSurCase(grilleCases[3][0]);
+        new Roi(this, false).allerSurCase(grilleCases[4][0]);
+        new Fou(this, false).allerSurCase(grilleCases[5][0]);
+        new Cavalier(this, false).allerSurCase(grilleCases[6][0]);
+        new Tour(this, false).allerSurCase(grilleCases[7][0]);
 
+        // Pions noirs (rangée 1)
+        for (int x = 0; x < 8; x++) {
+            new Pion(this, false).allerSurCase(grilleCases[x][1]);
+        }
 
         setChanged();
         notifyObservers();
-
     }
 
-    private void placerPiece(Piece piece, int x, int y, boolean color) {
-        Case c = grilleCases[x][y];
-        piece.allerSurCase(c);
-        piece.setColor(color);
-        map.put(c, new Point(x, y));
-    }
 
     public void arriverCase(Case c, Piece p) {
-
-        //Case dep = p.getCase();
-        //dep.p = null;
-
 
         c.p = p;
 
     }
 
     public void deplacerPiece(Case c1, Case c2) {
-
         if (c1.p != null) {
             c1.p.allerSurCase(c2);
 
         }
-
         setChanged();
         notifyObservers();
 
     }
 
+    public void notifierObservateurs() {
+        setChanged();
+        notifyObservers();
+    }
 
     /** Indique si p est contenu dans la grille
      */
     private boolean contenuDansGrille(Point p) {
         return p.x >= 0 && p.x < SIZE_X && p.y >= 0 && p.y < SIZE_Y;
     }
-    
+
     private Case caseALaPosition(Point p) {
         Case retour = null;
-        
+
         if (contenuDansGrille(p)) {
             retour = grilleCases[p.x][p.y];
         }
@@ -119,4 +121,8 @@ public class Plateau extends Observable {
     }
 
 
+    public Point getPositionCase(Case c) {
+        return map.get(c);
+    }
 }
+

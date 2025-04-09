@@ -9,7 +9,7 @@ import modele.jeu.Piece;
 
 public class Case {
 
-    protected Piece p;
+    public Piece p;
     protected Plateau plateau;
 
 
@@ -35,4 +35,4 @@ public class Case {
 
     }*/
 
-   }
+}
