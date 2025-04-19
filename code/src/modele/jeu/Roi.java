@@ -16,6 +16,11 @@ public class Roi extends Piece
         super(_plateau, _estBlanc);
         casesAccessibles = new DecorateurCasesEnLigne(new DecorateurCasesEnDiagonale(null));
     }
+
+    @Override
+    public String getType() {
+        return "Roi";
+    }
     // le décorateur récupère les cases en diagonale et en ligne
     // ArrayList<Case> lst = casesAccessibles.getCasesAccessibles();
 

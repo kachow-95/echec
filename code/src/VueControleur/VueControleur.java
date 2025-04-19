@@ -50,6 +50,7 @@ public class VueControleur extends JFrame implements Observer {
     private Case caseClic1; // mémorisation des cases cliquées
     private Case caseClic2;
 
+    private Color couleurCaseRoiEnDanger = new Color(255, 0, 0, 100); // Rouge semi-transparent pour le roi en danger
 
     private JLabel[][] tabJLabel; // cases graphique (au moment du rafraichissement, chaque case va être associée à une icône, suivant ce qui est présent dans le modèle)
 
@@ -69,6 +70,16 @@ public class VueControleur extends JFrame implements Observer {
 
         mettreAJourAffichage();
 
+    }
+    private void marquerRoiEnDanger(Case roiCase) {
+        if (roiCase != null) {
+            Point pos = plateau.getPositionCase(roiCase);
+            if (pos != null) {
+                int x = pos.x;
+                int y = pos.y;
+                tabJLabel[x][y].setBackground(couleurCaseRoiEnDanger);  // Appliquer la couleur rouge
+            }
+        }
     }
 
 
@@ -102,14 +113,12 @@ public class VueControleur extends JFrame implements Observer {
 
 
 
-    // Ajoutez ces méthodes à VueControleur.java
     private ArrayList<Case> casesMarquees = new ArrayList<>();
     private Color couleurOriginaleCasePaire = new Color(150, 150, 210);
     private Color couleurOriginaleCaseImpaire = new Color(50, 50, 110);
     private Color couleurCaseAccessible = new Color(255, 255, 0, 100); // Jaune semi-transparent
 
     private void marquerCasesAccessibles(ArrayList<Case> cases) {
-        // Sauvegarder les cases marquées pour pouvoir les effacer plus tard
         casesMarquees.clear();
         casesMarquees.addAll(cases);
 
@@ -172,40 +181,65 @@ public class VueControleur extends JFrame implements Observer {
                         if (caseClic1 == null) {
                             caseClic1 = plateau.getCases()[xx][yy];
 
-                            // Vérifie s'il y a une pièce sur la case et si c'est au tour du joueur
+                            // Check if the selected case has a piece
                             if (caseClic1.getPiece() != null) {
-                                // On obtient les cases accessibles
-                                ArrayList<Case> casesAccessibles = caseClic1.getPiece().getCasesAccessibles();
+                                // Verify if it's the correct player's turn
+                                if (caseClic1.getPiece().estBlanc() != jeu.estTourDesBlancs()) {
+                                    caseClic1 = null; // Not the correct player, reset
+                                    return;
+                                }
 
-                                // Si aucune case accessible, annuler la sélection
-                                if (casesAccessibles.isEmpty()) {
-                                    caseClic1 = null;
+                                ArrayList<Case> casesAccessibles;
+
+                                // If the king is in check, filter the possible moves
+                                if (jeu.isEnEchec()) {
+                                    casesAccessibles = jeu.getCoupsFiltres(caseClic1.getPiece());
                                 } else {
-                                    // Marquer ces cases pour l'affichage
-                                    marquerCasesAccessibles(casesAccessibles);
+                                    casesAccessibles = caseClic1.getPiece().getCasesAccessibles();
+                                }
+
+                                if (casesAccessibles.isEmpty()) {
+                                    caseClic1 = null; // No valid moves, reset
+                                } else {
+                                    marquerCasesAccessibles(casesAccessibles); // Mark accessible squares
                                 }
                             } else {
-                                // Pas de pièce sur la case, on réinitialise
+                                // If no piece, reset caseClic1
                                 caseClic1 = null;
                             }
                         } else {
                             caseClic2 = plateau.getCases()[xx][yy];
-
-                            // Réinitialiser le marquage des cases accessibles
                             effacerMarquageCasesAccessibles();
 
-                            // Vérifier si la case d'arrivée fait partie des cases accessibles
+                            // Get the accessible cases for the selected piece
                             ArrayList<Case> casesAccessibles = caseClic1.getPiece().getCasesAccessibles();
+
+                            // If the destination case is accessible, execute the move
                             if (casesAccessibles.contains(caseClic2)) {
-                                // Envoyer le coup
                                 jeu.envoyerCoup(new Coup(caseClic1, caseClic2));
+                                jeu.appliquerCoup(new Coup(caseClic1, caseClic2));
+                                if (jeu.verifierPromotionPion(caseClic2)) {
+                                    afficherMenuPromotion();
+                                }
+
+
+                                jeu.changerTour(); // Change turn
+
+                                // Check if promotion is needed
                             }
 
-                            // Réinitialiser les clics
+                            // Reset selected cases after move
                             caseClic1 = null;
                             caseClic2 = null;
+
+                            // Check for checkmate
+                            if (jeu.isEchecEtMat()) {
+                                JOptionPane.showMessageDialog(null, "Échec et mat ! Nouvelle partie.");
+                                reinitialiserJeu(); // Reset the game after checkmate
+                            }
                         }
                     }
+
                 });
 
 
@@ -223,19 +257,83 @@ public class VueControleur extends JFrame implements Observer {
         add(grilleJLabels);
     }
 
+    private void reinitialiserJeu() {
+        jeu = new Jeu(); // recrée un jeu
+        plateau = jeu.getPlateau(); // on met à jour le plateau
+        plateau.addObserver(this); // observer à nouveau
+        mettreAJourAffichage();
+    }
 
-    /**
-     * Il y a une grille du côté du modèle ( jeu.getGrille() ) et une grille du côté de la vue (tabJLabel)
-     */
+    private void afficherMenuPromotion() {
+        Piece pion = plateau.getPionPromouvable();
+
+        if (pion != null) {
+            String[] options = {"Dame", "Tour", "Cavalier", "Fou"};
+
+            String choix = (String) JOptionPane.showInputDialog(
+                    this,
+                    "Choisissez une pièce pour la promotion du pion :",
+                    "Promotion de Pion",
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    options,
+                    options[0]
+            );
+
+            if (choix != null) {
+                Piece nouvellePiece = null;
+                switch (choix) {
+                    case "Dame":
+                        nouvellePiece = new Dame(plateau, pion.estBlanc());
+                        break;
+                    case "Tour":
+                        nouvellePiece = new Tour(plateau, pion.estBlanc());
+                        break;
+                    case "Cavalier":
+                        nouvellePiece = new Cavalier(plateau, pion.estBlanc());
+                        break;
+                    case "Fou":
+                        nouvellePiece = new Fou(plateau, pion.estBlanc());
+                        break;
+                }
+
+                if (nouvellePiece != null) {
+                    // Find the position of the pawn to promote
+                    Point positionPion = plateau.getPositionCase(pion.getCase()); // Get the case of the pawn
+
+                    // Ensure the case exists
+                    if (positionPion != null) {
+                        Case casePion = plateau.getCases()[positionPion.x][positionPion.y];
+
+                        // Move the new promoted piece to the original pawn's position
+                        nouvellePiece.allerSurCase(casePion);
+                        plateau.setPionPromouvable(null);  // Reset the promotable pawn after promotion
+                        mettreAJourAffichage();  // Refresh the display
+                    }
+                }
+            }
+        }
+    }
+
+
     private void mettreAJourAffichage() {
-
+        // Réinitialiser les couleurs de fond de toutes les cases
         for (int x = 0; x < sizeX; x++) {
             for (int y = 0; y < sizeY; y++) {
+                if ((y % 2 == 0 && x % 2 == 0) || (y % 2 != 0 && x % 2 != 0)) {
+                    tabJLabel[x][y].setBackground(couleurOriginaleCaseImpaire);
+                } else {
+                    tabJLabel[x][y].setBackground(couleurOriginaleCasePaire);
+                }
+            }
+        }
 
+        // Affichage des pièces
+        for (int x = 0; x < sizeX; x++) {
+            for (int y = 0; y < sizeY; y++) {
                 Case c = plateau.getCases()[x][y];
 
                 if (c != null) {
-
                     Piece e = c.getPiece();
 
                     if (e != null) {
@@ -255,10 +353,18 @@ public class VueControleur extends JFrame implements Observer {
                     } else {
                         tabJLabel[x][y].setIcon(null);
                     }
-
-
                 }
+            }
+        }
 
+        // Afficher en rouge la case du roi en danger, si elle existe
+        Case caseRoiEnDanger = jeu.verifierRoiEnDanger();
+        if (caseRoiEnDanger != null) {
+            Point pos = plateau.getPositionCase(caseRoiEnDanger);
+            if (pos != null) {
+                int x = pos.x;
+                int y = pos.y;
+                tabJLabel[x][y].setBackground(Color.RED);
             }
         }
     }
@@ -277,7 +383,7 @@ public class VueControleur extends JFrame implements Observer {
                     public void run() {
                         mettreAJourAffichage();
                     }
-                }); 
+                });
         */
 
     }

@@ -23,7 +23,7 @@ public class Plateau extends Observable {
 
     public static final int SIZE_X = 8;
     public static final int SIZE_Y = 8;
-
+    private Piece pionPromouvable=null;
 
     private HashMap<Case, Point> map = new  HashMap<Case, Point>(); // permet de récupérer la position d'une case à partir de sa référence
     private Case[][] grilleCases = new Case[SIZE_X][SIZE_Y]; // permet de récupérer une case à partir de ses coordonnées
@@ -47,7 +47,15 @@ public class Plateau extends Observable {
         }
 
     }
+    // Méthode pour récupérer le pion promouvable
+    public Piece getPionPromouvable() {
+        return pionPromouvable;
+    }
 
+    // Méthode pour définir un pion promouvable
+    public void setPionPromouvable(Piece pion) {
+        this.pionPromouvable = pion;
+    }
     public void placerPieces() {
         // Pièces blanches (rangée 7)
         new Tour(this, true).allerSurCase(grilleCases[0][7]);
@@ -92,13 +100,16 @@ public class Plateau extends Observable {
 
     public void deplacerPiece(Case c1, Case c2) {
         if (c1.p != null) {
+            Piece piece = c1.p;
+
+            // Déplacer la pièce
             c1.p.allerSurCase(c2);
+            System.out.println("Le pion se deplace!");
 
         }
-        setChanged();
-        notifyObservers();
-
     }
+
+
 
     public void notifierObservateurs() {
         setChanged();

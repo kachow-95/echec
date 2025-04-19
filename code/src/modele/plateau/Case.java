@@ -28,11 +28,15 @@ public class Case {
     public Piece getPiece() {
         return p;
     }
+    public void setPiece(Piece _p) {
+        p = _p;
+    }
 /*
     public void setEntite(Piece _e) {
 
         p = _e;
 
     }*/
+
 
 }

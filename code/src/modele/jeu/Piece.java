@@ -56,6 +56,27 @@ public abstract class Piece {
         }
         return new ArrayList<>();
     }
+    public String getType() {
+        // Cette méthode sera redéfinie dans chaque sous-classe de Piece
+        return "Pièce inconnue";
+    }
 
+    /**
+     * Vérifie si les cases accessibles de cette pièce contiennent un Roi.
+     * Retourne la case contenant le Roi si trouvé, sinon retourne null.
+     * @return La case contenant le Roi, ou null si aucun Roi n'est trouvé.
+     */
+    public Case contientRoi() {
+        ArrayList<Case> casesAccessibles = getCasesAccessibles();
 
+        for (Case caseAccessible : casesAccessibles) {
+            if (caseAccessible.getPiece() != null) {
+                Piece pieceAccessible = caseAccessible.getPiece();
+                if (pieceAccessible.getType().equals("Roi")) {
+                    return caseAccessible;  // Retourne la case contenant le Roi.
+                }
+            }
+        }
+        return null;  // Aucune case accessible ne contient un Roi.
+    }
 }
