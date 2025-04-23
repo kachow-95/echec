@@ -9,4 +9,13 @@ public class Coup {
         dep = _dep;
         arr = _arr;
     }
+    public Case getDep() {
+        return dep;
+    }
+
+    public Case getArr() {
+        return arr;
+    }
+
+
 }

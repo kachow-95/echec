@@ -21,38 +21,31 @@ import modele.jeu.Roi;
 import modele.jeu.Tour;
 import modele.plateau.Plateau;
 
+import modele.jeu.PGNSauvegarde;
+import java.io.File;
+
 
 /** Cette classe a deux fonctions :
  *  (1) Vue : proposer une représentation graphique de l'application (cases graphiques, etc.)
  *  (2) Controleur : écouter les évènements clavier et déclencher le traitement adapté sur le modèle (clic position départ -> position arrivée pièce))
  *
  */
-public class VueControleur extends JFrame implements Observer {
+    public class VueControleur extends JFrame implements Observer {
     private Plateau plateau; // référence sur une classe de modèle : permet d'accéder aux données du modèle pour le rafraichissement, permet de communiquer les actions clavier (ou souris)
     private Jeu jeu;
     private final int sizeX; // taille de la grille affichée
     private final int sizeY;
     private static final int pxCase = 50; // nombre de pixel par case
-    // icones affichées dans la grille
-    private ImageIcon icoRoiNoir;
-    private ImageIcon icoRoiBlanc;
-    private ImageIcon icoDameBlanc;
-    private ImageIcon icoDameNoir;
-    private ImageIcon icoFouBlanc;
-    private ImageIcon icoFouNoir;
-    private ImageIcon icoCavalierBlanc;
-    private ImageIcon icoCavalierNoir;
-    private ImageIcon icoTourBlanc;
-    private ImageIcon icoTourNoir;
-    private ImageIcon icoPionBlanc;
-    private ImageIcon icoPionNoir;
 
     private Case caseClic1; // mémorisation des cases cliquées
     private Case caseClic2;
+    private IconManager iconManager= new IconManager();
+
 
     private Color couleurCaseRoiEnDanger = new Color(255, 0, 0, 100); // Rouge semi-transparent pour le roi en danger
 
-    private JLabel[][] tabJLabel; // cases graphique (au moment du rafraichissement, chaque case va être associée à une icône, suivant ce qui est présent dans le modèle)
+    private JLabel[][] tabJLabel; //
+    private CaseHighlighter caseHighlighter;
 
 
     public VueControleur(Jeu _jeu) {
@@ -61,16 +54,19 @@ public class VueControleur extends JFrame implements Observer {
         sizeX = plateau.SIZE_X;
         sizeY = plateau.SIZE_Y;
 
+        // Initialisation de CaseHighlighter
+        caseHighlighter = new CaseHighlighter(plateau, tabJLabel,
+                new Color(255, 255, 0, 100), // couleurAccessible
+                new Color(150, 150, 210), // couleurPaire
+                new Color(50, 50, 110)); // couleurImpaire
 
-
-        chargerLesIcones();
         placerLesComposantsGraphiques();
 
         plateau.addObserver(this);
 
         mettreAJourAffichage();
-
     }
+
     private void marquerRoiEnDanger(Case roiCase) {
         if (roiCase != null) {
             Point pos = plateau.getPositionCase(roiCase);
@@ -83,22 +79,7 @@ public class VueControleur extends JFrame implements Observer {
     }
 
 
-    private void chargerLesIcones() {
-        icoRoiBlanc = chargerIcone("Images/wK.png");
-        icoDameBlanc = chargerIcone("Images/wQ.png");
-        icoFouBlanc = chargerIcone("Images/wB.png");
-        icoCavalierBlanc = chargerIcone("Images/wN.png");
-        icoTourBlanc = chargerIcone("Images/wR.png");
-        icoPionBlanc = chargerIcone("Images/wP.png");
 
-        icoRoiNoir = chargerIcone("Images/bK.png");
-        icoDameNoir = chargerIcone("Images/bQ.png");
-        icoFouNoir = chargerIcone("Images/bB.png");
-        icoCavalierNoir = chargerIcone("Images/bN.png");
-        icoTourNoir = chargerIcone("Images/bR.png");
-        icoPionNoir = chargerIcone("Images/bP.png");
-
-    }
     private ImageIcon chargerIcone(String urlIcone) {
         BufferedImage image = null;
 
@@ -159,6 +140,20 @@ public class VueControleur extends JFrame implements Observer {
         setResizable(false);
         setSize(sizeX * pxCase, sizeX * pxCase);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // permet de terminer l'application à la fermeture de la fenêtre
+        // Ajout d'une barre avec un bouton "Sauvegarder"
+        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JButton boutonSauvegarder = new JButton("Sauvegarder la partie");
+        // Bouton pour charger une partie
+        JButton boutonCharger = new JButton("Charger la partie");
+        boutonSauvegarder.addActionListener(e -> SauvegardeManager.sauvegarder(this, jeu));
+        boutonCharger.addActionListener(e -> SauvegardeManager.charger(this, jeu, this::mettreAJourAffichage));
+
+
+        // Ajout des boutons dans le panel supérieur
+        topPanel.add(boutonCharger); // Ajout du bouton "Charger" à la barre
+
+        topPanel.add(boutonSauvegarder);
+        add(topPanel, BorderLayout.NORTH); // Ajoute le bouton en haut de la fenêtre
 
         JComponent grilleJLabels = new JPanel(new GridLayout(sizeY, sizeX)); // grilleJLabels va contenir les cases graphiques et les positionner sous la forme d'une grille
 
@@ -219,7 +214,7 @@ public class VueControleur extends JFrame implements Observer {
                                 jeu.envoyerCoup(new Coup(caseClic1, caseClic2));
                                 jeu.appliquerCoup(new Coup(caseClic1, caseClic2));
                                 if (jeu.verifierPromotionPion(caseClic2)) {
-                                    afficherMenuPromotion();
+                                    PromotionHelper.gererPromotion(plateau, VueControleur.this, VueControleur.this::mettreAJourAffichage);
                                 }
 
 
@@ -264,57 +259,6 @@ public class VueControleur extends JFrame implements Observer {
         mettreAJourAffichage();
     }
 
-    private void afficherMenuPromotion() {
-        Piece pion = plateau.getPionPromouvable();
-
-        if (pion != null) {
-            String[] options = {"Dame", "Tour", "Cavalier", "Fou"};
-
-            String choix = (String) JOptionPane.showInputDialog(
-                    this,
-                    "Choisissez une pièce pour la promotion du pion :",
-                    "Promotion de Pion",
-                    JOptionPane.QUESTION_MESSAGE,
-                    null,
-                    options,
-                    options[0]
-            );
-
-            if (choix != null) {
-                Piece nouvellePiece = null;
-                switch (choix) {
-                    case "Dame":
-                        nouvellePiece = new Dame(plateau, pion.estBlanc());
-                        break;
-                    case "Tour":
-                        nouvellePiece = new Tour(plateau, pion.estBlanc());
-                        break;
-                    case "Cavalier":
-                        nouvellePiece = new Cavalier(plateau, pion.estBlanc());
-                        break;
-                    case "Fou":
-                        nouvellePiece = new Fou(plateau, pion.estBlanc());
-                        break;
-                }
-
-                if (nouvellePiece != null) {
-                    // Find the position of the pawn to promote
-                    Point positionPion = plateau.getPositionCase(pion.getCase()); // Get the case of the pawn
-
-                    // Ensure the case exists
-                    if (positionPion != null) {
-                        Case casePion = plateau.getCases()[positionPion.x][positionPion.y];
-
-                        // Move the new promoted piece to the original pawn's position
-                        nouvellePiece.allerSurCase(casePion);
-                        plateau.setPionPromouvable(null);  // Reset the promotable pawn after promotion
-                        mettreAJourAffichage();  // Refresh the display
-                    }
-                }
-            }
-        }
-    }
-
 
     private void mettreAJourAffichage() {
         // Réinitialiser les couleurs de fond de toutes les cases
@@ -337,19 +281,18 @@ public class VueControleur extends JFrame implements Observer {
                     Piece e = c.getPiece();
 
                     if (e != null) {
-                        if (e instanceof Roi) {
-                            tabJLabel[x][y].setIcon(e.estBlanc() ? icoRoiBlanc : icoRoiNoir);
-                        } else if (e instanceof Dame) {
-                            tabJLabel[x][y].setIcon(e.estBlanc() ? icoDameBlanc : icoDameNoir);
-                        } else if (e instanceof Tour) {
-                            tabJLabel[x][y].setIcon(e.estBlanc() ? icoTourBlanc : icoTourNoir);
-                        } else if (e instanceof Fou) {
-                            tabJLabel[x][y].setIcon(e.estBlanc() ? icoFouBlanc : icoFouNoir);
-                        } else if (e instanceof Cavalier) {
-                            tabJLabel[x][y].setIcon(e.estBlanc() ? icoCavalierBlanc : icoCavalierNoir);
-                        } else if (e instanceof Pion) {
-                            tabJLabel[x][y].setIcon(e.estBlanc() ? icoPionBlanc : icoPionNoir);
-                        }
+                        String couleur = e.estBlanc() ? "w" : "b";
+                        String code = "";
+
+                        if (e instanceof Roi) code = "K";
+                        else if (e instanceof Dame) code = "Q";
+                        else if (e instanceof Tour) code = "R";
+                        else if (e instanceof Fou) code = "B";
+                        else if (e instanceof Cavalier) code = "N";
+                        else if (e instanceof Pion) code = "P";
+
+                        tabJLabel[x][y].setIcon(iconManager.get(couleur + code));
+
                     } else {
                         tabJLabel[x][y].setIcon(null);
                     }
@@ -372,19 +315,6 @@ public class VueControleur extends JFrame implements Observer {
     @Override
     public void update(Observable o, Object arg) {
         mettreAJourAffichage();
-        /*
-
-        // récupérer le processus graphique pour rafraichir
-        // (normalement, à l'inverse, a l'appel du modèle depuis le contrôleur, utiliser un autre processus, voir classe Executor)
-
-
-        SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        mettreAJourAffichage();
-                    }
-                });
-        */
 
     }
 }

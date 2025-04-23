@@ -14,6 +14,7 @@ public class Jeu extends Thread {
     private boolean tourJoueur1;  // Indique quel joueur doit jouer (true = j1, false = j2)
     private boolean echecEtMat;   // ➕ variable pour stocker l'état échec et mat
     private boolean enEchec = false;
+    private ArrayList<Coup> historiqueCoups = new ArrayList<>();
 
     public Jeu() {
         plateau = new Plateau();
@@ -57,10 +58,15 @@ public class Jeu extends Thread {
 
     public void appliquerCoup(Coup coup) {
         plateau.deplacerPiece(coup.dep, coup.arr);
+        historiqueCoups.add(coup);
+
     }
 
     public boolean estTourDesBlancs() {
         return tourJoueur1;
+    }
+    public ArrayList<Coup> getHistorique() {
+        return historiqueCoups;
     }
 
     public void changerTour() {
