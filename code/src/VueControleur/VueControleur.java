@@ -103,14 +103,14 @@ import java.io.File;
         casesMarquees.clear();
         casesMarquees.addAll(cases);
 
-        // Marquer chaque case accessible
+        // Marque chaque case accessible
         for (Case c : cases) {
             Point pos = plateau.getPositionCase(c);
             if (pos != null) {
                 int x = pos.x;
                 int y = pos.y;
 
-                // Changer la couleur de fond de la case
+                // Change la couleur de la case
                 tabJLabel[x][y].setBackground(couleurCaseAccessible);
             }
         }
@@ -123,7 +123,7 @@ import java.io.File;
                 int x = pos.x;
                 int y = pos.y;
 
-                // Restaurer la couleur d'origine
+                // Restaure la couleur d'origine de la case
                 if ((y%2 == 0 && x%2 == 0) || (y%2 != 0 && x%2 != 0)) {
                     tabJLabel[x][y].setBackground(couleurOriginaleCaseImpaire);
                 } else {
@@ -139,8 +139,8 @@ import java.io.File;
         setTitle("Jeu d'Échecs");
         setResizable(false);
         setSize(sizeX * pxCase, sizeX * pxCase);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // permet de terminer l'application à la fermeture de la fenêtre
-        // Ajout d'une barre avec un bouton "Sauvegarder"
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        // Ajoute une barre avec un bouton "Sauvegarder la partie"
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JButton boutonSauvegarder = new JButton("Sauvegarder la partie");
         // Bouton pour charger une partie
@@ -149,13 +149,13 @@ import java.io.File;
         boutonCharger.addActionListener(e -> SauvegardeManager.charger(this, jeu, this::mettreAJourAffichage));
 
 
-        // Ajout des boutons dans le panel supérieur
+        // Ajout des boutons dans la barre
         topPanel.add(boutonCharger); // Ajout du bouton "Charger" à la barre
 
         topPanel.add(boutonSauvegarder);
         add(topPanel, BorderLayout.NORTH); // Ajoute le bouton en haut de la fenêtre
 
-        JComponent grilleJLabels = new JPanel(new GridLayout(sizeY, sizeX)); // grilleJLabels va contenir les cases graphiques et les positionner sous la forme d'une grille
+        JComponent grilleJLabels = new JPanel(new GridLayout(sizeY, sizeX)); // affichage de l'echiquier
 
 
         tabJLabel = new JLabel[sizeX][sizeY];
@@ -164,29 +164,27 @@ import java.io.File;
             for (int x = 0; x < sizeX; x++) {
                 JLabel jlab = new JLabel();
 
-                tabJLabel[x][y] = jlab; // on conserve les cases graphiques dans tabJLabel pour avoir un accès pratique à celles-ci (voir mettreAJourAffichage() )
+                tabJLabel[x][y] = jlab;
 
-                final int xx = x; // permet de compiler la classe anonyme ci-dessous
+                final int xx = x;
                 final int yy = y;
-                // écouteur de clics
-                // Modifiez la méthode mouseClicked dans VueControleur.java
                 jlab.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
                         if (caseClic1 == null) {
                             caseClic1 = plateau.getCases()[xx][yy];
 
-                            // Check if the selected case has a piece
+                            // Check si la case selectionnée a une piece
                             if (caseClic1.getPiece() != null) {
-                                // Verify if it's the correct player's turn
+                                // bon tour joueur?
                                 if (caseClic1.getPiece().estBlanc() != jeu.estTourDesBlancs()) {
-                                    caseClic1 = null; // Not the correct player, reset
+                                    caseClic1 = null; // pas le bon joueur => refait
                                     return;
                                 }
 
                                 ArrayList<Case> casesAccessibles;
 
-                                // If the king is in check, filter the possible moves
+                                // si le roi est en echec alors il limite les mouvments pour le defendre
                                 if (jeu.isEnEchec()) {
                                     casesAccessibles = jeu.getCoupsFiltres(caseClic1.getPiece());
                                 } else {
@@ -194,22 +192,22 @@ import java.io.File;
                                 }
 
                                 if (casesAccessibles.isEmpty()) {
-                                    caseClic1 = null; // No valid moves, reset
+                                    caseClic1 = null; // pas de mouvements valide => reessaye
                                 } else {
-                                    marquerCasesAccessibles(casesAccessibles); // Mark accessible squares
+                                    marquerCasesAccessibles(casesAccessibles); // marque les cases accessibles
                                 }
                             } else {
-                                // If no piece, reset caseClic1
+                                // si pas de piece alors reset casClic1
                                 caseClic1 = null;
                             }
                         } else {
                             caseClic2 = plateau.getCases()[xx][yy];
                             effacerMarquageCasesAccessibles();
 
-                            // Get the accessible cases for the selected piece
+                            // renvoie les cases accessibles pour la piece
                             ArrayList<Case> casesAccessibles = caseClic1.getPiece().getCasesAccessibles();
 
-                            // If the destination case is accessible, execute the move
+                            // si destination accessible alors bouger la piece
                             if (casesAccessibles.contains(caseClic2)) {
                                 jeu.envoyerCoup(new Coup(caseClic1, caseClic2));
                                 jeu.appliquerCoup(new Coup(caseClic1, caseClic2));
@@ -218,19 +216,18 @@ import java.io.File;
                                 }
 
 
-                                jeu.changerTour(); // Change turn
+                                jeu.changerTour(); // Change tour
 
-                                // Check if promotion is needed
                             }
 
-                            // Reset selected cases after move
+                            // Reset les cases selectionnées après bouger
                             caseClic1 = null;
                             caseClic2 = null;
 
-                            // Check for checkmate
+                            // verifie si roi est en echec et mat
                             if (jeu.isEchecEtMat()) {
                                 JOptionPane.showMessageDialog(null, "Échec et mat ! Nouvelle partie.");
-                                reinitialiserJeu(); // Reset the game after checkmate
+                                reinitialiserJeu(); // Reset le jeu si roi est en checkmate
                             }
                         }
                     }
@@ -255,13 +252,13 @@ import java.io.File;
     private void reinitialiserJeu() {
         jeu = new Jeu(); // recrée un jeu
         plateau = jeu.getPlateau(); // on met à jour le plateau
-        plateau.addObserver(this); // observer à nouveau
+        plateau.addObserver(this);
         mettreAJourAffichage();
     }
 
 
     private void mettreAJourAffichage() {
-        // Réinitialiser les couleurs de fond de toutes les cases
+        // Réinitialise la couleur de toutes les cases
         for (int x = 0; x < sizeX; x++) {
             for (int y = 0; y < sizeY; y++) {
                 if ((y % 2 == 0 && x % 2 == 0) || (y % 2 != 0 && x % 2 != 0)) {

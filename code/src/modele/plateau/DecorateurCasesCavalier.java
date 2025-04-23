@@ -25,7 +25,7 @@ public class DecorateurCasesCavalier extends DecorateurCasesAccessibles {
             return casesAccessibles;
         }
 
-        // Définir les mouvements en L du cavalier
+        // mouvements en L
         int[][] mouvements = {
                 {1, 2}, {2, 1}, {2, -1}, {1, -2},
                 {-1, -2}, {-2, -1}, {-2, 1}, {-1, 2}
@@ -35,12 +35,12 @@ public class DecorateurCasesCavalier extends DecorateurCasesAccessibles {
             int newX = position.x + mouvement[0];
             int newY = position.y + mouvement[1];
 
-            // Vérifier si la position est dans la grille
+            // Vérifie si la position est dans le plateau
             if (newX >= 0 && newX < Plateau.SIZE_X && newY >= 0 && newY < Plateau.SIZE_Y) {
                 Case[][] cases = plateau.getCases();
                 Case caseCandidate = cases[newX][newY];
 
-                // Vérifier si la case est vide ou contient une pièce adverse
+                // Vérifie si la case est vide ou a une pièce ennemie
                 if (caseCandidate.getPiece() == null ||
                         caseCandidate.getPiece().estBlanc() != piece.estBlanc()) {
                     casesAccessibles.add(caseCandidate);

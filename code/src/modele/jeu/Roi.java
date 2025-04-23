@@ -21,8 +21,6 @@ public class Roi extends Piece
     public String getType() {
         return "Roi";
     }
-    // le décorateur récupère les cases en diagonale et en ligne
-    // ArrayList<Case> lst = casesAccessibles.getCasesAccessibles();
 
 }
 

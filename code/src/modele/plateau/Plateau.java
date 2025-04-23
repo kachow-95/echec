@@ -25,8 +25,8 @@ public class Plateau extends Observable {
     public static final int SIZE_Y = 8;
     private Piece pionPromouvable=null;
 
-    private HashMap<Case, Point> map = new  HashMap<Case, Point>(); // permet de récupérer la position d'une case à partir de sa référence
-    private Case[][] grilleCases = new Case[SIZE_X][SIZE_Y]; // permet de récupérer une case à partir de ses coordonnées
+    private HashMap<Case, Point> map = new  HashMap<Case, Point>(); // à partir de sa référence permet de récupérer la position d'une case
+    private Case[][] grilleCases = new Case[SIZE_X][SIZE_Y]; // à partir de ses coordonnées permet de récupérer une case
 
     public Plateau() {
         initPlateauVide();
@@ -47,12 +47,12 @@ public class Plateau extends Observable {
         }
 
     }
-    // Méthode pour récupérer le pion promouvable
+    // recupére le pion promouvable
     public Piece getPionPromouvable() {
         return pionPromouvable;
     }
 
-    // Méthode pour définir un pion promouvable
+    // défini un pion promouvable
     public void setPionPromouvable(Piece pion) {
         this.pionPromouvable = pion;
     }

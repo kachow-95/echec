@@ -11,13 +11,6 @@ public class Pion extends Piece {
 
     }
 
-    public boolean peutEtrePromu() {
-        return peutEtrePromu;
-    }
-
-    public void setPeutEtrePromu(boolean peutEtrePromu) {
-        this.peutEtrePromu = peutEtrePromu;
-    }
     @Override
     public String getType() {
         return "Pion";

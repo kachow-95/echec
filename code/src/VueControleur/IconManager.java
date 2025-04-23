@@ -31,6 +31,7 @@ public class IconManager {
 
     private void ajouter(String key, String chemin) {
         ImageIcon icon = new ImageIcon(chemin);
+        //redimensionne l'image par rapport a la case
         Image img = icon.getImage().getScaledInstance(pxCase, pxCase, Image.SCALE_SMOOTH);
         icons.put(key, new ImageIcon(img));
     }

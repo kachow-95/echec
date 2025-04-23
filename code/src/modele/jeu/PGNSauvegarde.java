@@ -9,14 +9,14 @@ import java.util.ArrayList;
 
 public class PGNSauvegarde {
 
-    // 🔁 Convertit un Point (ex: x=4, y=6) en notation échiquéenne (ex: "e2")
+    // Convertit un Point en notation d'echecs
     private static String convertirCoordonnees(Point p) {
         char colonne = (char) ('a' + p.x);
         int ligne = 8 - p.y;
         return "" + colonne + ligne;
     }
 
-    // ⬅️ Convertit une chaîne PGN ("e2") en Point(x, y)
+    // Convertit une chaîne PGN en Points
     private static Point convertirDepuisPGN(String pgn) {
         char colonne = pgn.charAt(0);
         int ligne = Character.getNumericValue(pgn.charAt(1));
@@ -26,7 +26,7 @@ public class PGNSauvegarde {
         return new Point(x, y);
     }
 
-    // 💾 Sauvegarder la partie dans un fichier PGN-like
+    // Sauvegarder la partie dans un fichier PGN
     public static void sauvegarderPartie(ArrayList<Coup> coups, Plateau plateau, String cheminFichier) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(cheminFichier))) {
             int numeroCoup = 1;
@@ -45,13 +45,13 @@ public class PGNSauvegarde {
                 writer.write(coupPGN + " ");
             }
             writer.newLine();
-            System.out.println("✅ Partie sauvegardée avec succès !");
+            System.out.println("Partie sauvegardée!");
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    // 📂 Charger une partie à partir d’un fichier de coups (type "e2e4 e7e5 ...")
+    // Charger une partie à partir d’un fichier PGN
     public static void chargerPartie(String cheminFichier, Jeu jeu) {
         Plateau plateau = jeu.getPlateau();
 
@@ -60,7 +60,7 @@ public class PGNSauvegarde {
             while ((ligne = reader.readLine()) != null) {
                 String[] tokens = ligne.split(" ");
                 for (String token : tokens) {
-                    // Ignore les numéros de coups "1.", "2.", etc.
+                    // prend en compte que les positions
                     if (token.contains(".")) continue;
 
                     if (token.length() == 4) {
@@ -82,7 +82,7 @@ public class PGNSauvegarde {
                     }
                 }
             }
-            System.out.println("✅ Partie chargée avec succès !");
+            System.out.println("Partie chargée!");
         } catch (IOException e) {
             e.printStackTrace();
         }

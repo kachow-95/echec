@@ -11,8 +11,8 @@ public class Jeu extends Thread {
     private Joueur j1;
     private Joueur j2;
     public Coup coupRecu;
-    private boolean tourJoueur1;  // Indique quel joueur doit jouer (true = j1, false = j2)
-    private boolean echecEtMat;   // ➕ variable pour stocker l'état échec et mat
+    private boolean tourJoueur1;
+    private boolean echecEtMat;
     private boolean enEchec = false;
     private ArrayList<Coup> historiqueCoups = new ArrayList<>();
 
@@ -29,10 +29,6 @@ public class Jeu extends Thread {
 
     public Plateau getPlateau() {
         return plateau;
-    }
-
-    public void placerPieces() {
-        plateau.placerPieces();
     }
 
     public void envoyerCoup(Coup coup) {
@@ -72,14 +68,13 @@ public class Jeu extends Thread {
     public void changerTour() {
         tourJoueur1 = !tourJoueur1;
         enEchec = verifierRoiEnDanger() != null;
-        // ➕ Vérifie l’échec et mat
+        // Vérifie l’échec et mat
         if (estEchecEtMat()) {
             echecEtMat = true;
             System.out.println("Échec et mat !");
         }
     }
 
-    // Dans Jeu.java
     public boolean verifierPromotionPion(Case caseArrivee) {
         Piece piece = caseArrivee.getPiece();
         if (piece != null && piece.getType().equals("Pion")) {

@@ -57,7 +57,7 @@ public abstract class Piece {
         return new ArrayList<>();
     }
     public String getType() {
-        // Cette méthode sera redéfinie dans chaque sous-classe de Piece
+        // redefini fonction dans pion et roi (pour promouvoir le pion et pour verifier si le roi est en echec)
         return "Pièce inconnue";
     }
 
@@ -73,10 +73,10 @@ public abstract class Piece {
             if (caseAccessible.getPiece() != null) {
                 Piece pieceAccessible = caseAccessible.getPiece();
                 if (pieceAccessible.getType().equals("Roi")) {
-                    return caseAccessible;  // Retourne la case contenant le Roi.
+                    return caseAccessible;  // Retourne la case contenant le Roi
                 }
             }
         }
-        return null;  // Aucune case accessible ne contient un Roi.
+        return null;  // Aucune case accessible ne contient un Roi
     }
 }

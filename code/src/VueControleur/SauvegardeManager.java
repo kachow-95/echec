@@ -25,7 +25,7 @@ public class SauvegardeManager {
             File f = chooser.getSelectedFile();
             PGNSauvegarde.chargerPartie(f.getAbsolutePath(), jeu);
             JOptionPane.showMessageDialog(parent, "Partie chargée !");
-            onLoaded.run(); // callback pour rafraîchir l'affichage
+            onLoaded.run(); // rafraîchi l'affichage
         }
     }
 }

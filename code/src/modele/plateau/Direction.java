@@ -13,29 +13,5 @@ import java.awt.Point;
  *
  */
 public enum Direction {
-    haut, bas, gauche, droite,
-    /// notre code
-    haut_gauche, haut_droite, bas_droite, bas_gauche;
-    public Point getDelta() {
-        switch (this) {
-            case haut:
-                return new Point(0, -1);
-            case bas:
-                return new Point(0, 1);
-            case gauche:
-                return new Point(-1, 0);
-            case droite:
-                return new Point(1, 0);
-            case bas_droite:
-                return new Point(1, 1);
-            case bas_gauche:
-                return new Point(-1, 1);
-            case haut_gauche:
-                return new Point(-1, -1);
-            case haut_droite:
-                return new Point(1, -1);
-            default:
-                return null;
-        }
-    }
+    haut, bas, gauche, droite
 }

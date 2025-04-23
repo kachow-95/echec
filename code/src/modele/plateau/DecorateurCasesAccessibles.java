@@ -6,8 +6,8 @@ import java.util.ArrayList;
 
 public abstract class DecorateurCasesAccessibles {
 
-    protected Plateau plateau; // Changé en protected pour l'accès dans les sous-classes
-    protected Piece piece; // Changé en protected pour l'accès dans les sous-classes
+    protected Plateau plateau; // protected pour que les sous-classes puisse y acceder
+    protected Piece piece; // protected pour que les sous-classes puisse y acceder
 
     private DecorateurCasesAccessibles base;
 
@@ -15,12 +15,11 @@ public abstract class DecorateurCasesAccessibles {
         base = _baseDecorateur;
     }
 
-    // Ajouter cette méthode pour configurer la pièce et le plateau
+    // configuration de la pièce et le plateau
     public void setPieceEtPlateau(Piece _piece, Plateau _plateau) {
         this.piece = _piece;
         this.plateau = _plateau;
-
-        // Propager aux décorateurs de base
+        
         if (base != null) {
             base.setPieceEtPlateau(_piece, _plateau);
         }
